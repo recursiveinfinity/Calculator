@@ -1,13 +1,16 @@
 package com.example.sidd.calculator;
 
-import android.support.constraint.ConstraintLayout;
-import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -15,8 +18,11 @@ public class MainActivity extends AppCompatActivity {
     EditText etNumberTwo;
 
     Button btnAdd;
+    Button btnLogs;
 
     TextView tvResult;
+
+    private List<String> log = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
         etNumberTwo = findViewById(R.id.etNumberTwo);
 
         btnAdd = findViewById(R.id.btnAdd);
+        btnLogs = findViewById(R.id.btnLogs);
 
         tvResult = findViewById(R.id.tvResult);
 
@@ -36,9 +43,20 @@ public class MainActivity extends AppCompatActivity {
                 String result = add(etNumberOne.getText().toString(),
                         etNumberTwo.getText().toString());
                 tvResult.setText(result);
+                log.add("Result of Addition: " + result);
             }
         });
 
+        btnLogs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this,
+                        LogsActivity.class);
+                intent.putStringArrayListExtra("LogsResult",
+                        (ArrayList<String>) log);
+                startActivity(intent);
+            }
+        });
     }
 
     private String add(String numberOne, String numberTwo) {
