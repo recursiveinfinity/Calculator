@@ -24,7 +24,14 @@ public class LogsActivity extends AppCompatActivity {
             stringBuilder.append("\n");
         }
 
-        tvLogs.setText(stringBuilder.toString());
+        //tvLogs.setText(stringBuilder.toString());
+
+        Bus bus = (Bus) getIntent().getSerializableExtra("Bus");
+
+        tvLogs.setText(bus.getEyeColor());
+
+        Room room = getIntent().getParcelableExtra("Room");
+        tvLogs.setText(room.getName());
     }
 
 }
