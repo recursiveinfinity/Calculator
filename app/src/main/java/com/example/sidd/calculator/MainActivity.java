@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.constraint.Group;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -25,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button btnSave;
 
     TextView tvResult;
+    Group nameGroup;
 
     private List<String> log = new ArrayList<>();
 
@@ -43,32 +45,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         tvResult = findViewById(R.id.tvResult);
 
-        btnAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String result = add(etNumberOne.getText().toString(),
-                        etNumberTwo.getText().toString());
-                tvResult.setText(result);
-                log.add("Result of Addition: " + result);
-            }
-        });
+        nameGroup = findViewById(R.id.groupName);
+
+        btnAdd.setOnClickListener(this);
 
         btnSave.setOnClickListener(this);
 
-        btnLogs.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this,
-                        LogsActivity.class);
-                intent.putStringArrayListExtra("LogsResult",
-                        (ArrayList<String>) log);
-                Bus bus = new Bus("Grey", "Black");
-                intent.putExtra("Bus", bus);
-                Room room = new Room("Training Room", 4);
-                intent.putExtra("Room", room);
-                startActivity(intent);
-            }
-        });
+        btnLogs.setOnClickListener(this);
+
         readNameFromSharedPreferences();
     }
 
@@ -86,8 +70,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.btnSave) {
-            handleSetName();
+        switch (view.getId()) {
+            case R.id.btnSave:
+                handleSetName();
+                break;
+            case R.id.btnAdd:
+                handleAddClick();
+                break;
+            case R.id.btnLogs:
+                showLogs();
+                break;
         }
     }
 
@@ -99,10 +91,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         editor.apply();
     }
 
+    private void handleAddClick() {
+        String result = add(etNumberOne.getText().toString(),
+                etNumberTwo.getText().toString());
+        tvResult.setText(result);
+        log.add("Result of Addition: " + result);
+    }
+
+    private void showLogs() {
+        Intent intent = new Intent(MainActivity.this,
+                LogsActivity.class);
+        intent.putStringArrayListExtra("LogsResult",
+                (ArrayList<String>) log);
+        Bus bus = new Bus("Grey", "Black");
+        intent.putExtra("Bus", bus);
+        Room room = new Room("Training Room", 4);
+        intent.putExtra("Room", room);
+        startActivity(intent);
+    }
+
     private void readNameFromSharedPreferences() {
         SharedPreferences sharedPreferences = getSharedPreferences("MySharedPreferences",
                 Context.MODE_PRIVATE);
         String name = sharedPreferences.getString("name", "");
+        if (!name.isEmpty()) {
+           nameGroup.setVisibility(View.GONE);
+        }
         tvResult.setText(name);
     }
 }
