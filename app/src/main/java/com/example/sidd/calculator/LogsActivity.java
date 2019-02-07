@@ -1,10 +1,15 @@
 package com.example.sidd.calculator;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class LogsActivity extends AppCompatActivity {
@@ -16,22 +21,24 @@ public class LogsActivity extends AppCompatActivity {
 
         TextView tvLogs = findViewById(R.id.tvLogs);
 
-        ArrayList<String> logs =
-                getIntent().getStringArrayListExtra("LogsResult");
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < logs.size(); i++) {
-            stringBuilder.append(logs.get(i));
-            stringBuilder.append("\n");
-        }
-
-        //tvLogs.setText(stringBuilder.toString());
 
         Bus bus = (Bus) getIntent().getSerializableExtra("Bus");
 
-        tvLogs.setText(bus.getEyeColor());
 
         Room room = getIntent().getParcelableExtra("Room");
-        tvLogs.setText(room.getName());
+        tvLogs.setText(readDataFromFile());
+    }
+
+    private String readDataFromFile() {
+        File file = new File(getFilesDir(), "Logs.txt");
+        int size = (int) file.length();
+        byte[] contents = new byte[size];
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+            fileInputStream.read(contents);
+        }  catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new String(contents);
     }
 
 }

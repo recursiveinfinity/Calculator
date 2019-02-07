@@ -12,6 +12,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -99,6 +103,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void showLogs() {
+        if (log.size() > 0) {
+            writeLogsToFile();
+        }
         Intent intent = new Intent(MainActivity.this,
                 LogsActivity.class);
         intent.putStringArrayListExtra("LogsResult",
@@ -118,5 +125,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
            nameGroup.setVisibility(View.GONE);
         }
         tvResult.setText(name);
+    }
+
+    private void writeLogsToFile() {
+        File file = new File(getFilesDir(), "Logs.txt");
+        //FileOutputStream fileOutputStream = null;
+        try(FileOutputStream fileOutputStream =
+                    openFileOutput("Logs.txt", Context.MODE_PRIVATE)){
+            StringBuilder stringBuilder = new StringBuilder();
+            for (String result : log) {
+                stringBuilder.append(result);
+                stringBuilder.append("\n");
+            }
+            fileOutputStream.write(stringBuilder.toString().getBytes());
+
+
+        } catch(IOException ioException) {
+            Toast.makeText(this, "File Not Found", Toast.LENGTH_SHORT).show();
+            ioException.printStackTrace();
+        }
     }
 }
